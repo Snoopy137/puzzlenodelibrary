@@ -32,6 +32,6 @@ export class Book {
     loanDate!: String
 
     @Field(() => User, { nullable: true })
-    @ManyToOne(() => User, user => user.loans, { onDelete: 'CASCADE' })
-    loaner!: number
+    @ManyToOne(() => User, user => user.books, { onDelete: 'CASCADE' })
+    user!: number
 }

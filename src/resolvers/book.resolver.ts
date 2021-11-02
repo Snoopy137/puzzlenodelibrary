@@ -56,7 +56,20 @@ class BookIdLoanInput {
     isOnLoan = true
 
     @Field(() => Number)
-    loaner = 0;
+    user = 0;
+}
+
+@InputType()
+class BookIdReturnInput {
+
+    @Field(() => Number)
+    id!: number
+
+    @Field(() => Boolean)
+    isOnLoan = false
+
+    @Field(() => Number)
+    user = 0;
 }
 
 @Resolver()
@@ -115,7 +128,7 @@ export class BookResolver {
         @Arg('input', () => BookIdInput) input: BookIdInput
     ): Promise<Book | undefined> {
         try {
-            const book = await this.bookRepository.findOne(input.id, { relations: ['author', 'author.books', 'loaner', 'book.loaner'] });
+            const book = await this.bookRepository.findOne(input.id, { relations: ['author', 'author.books', 'user', 'user.books'] });
             if (!book) {
                 const error = new Error();
                 error.message = 'Book not found';
@@ -196,13 +209,47 @@ export class BookResolver {
         Promise<Book | undefined> {
         try {
             const book = await this.bookRepository.findOne(bookLoan.id);
+            if (!book) {
+                throw new Error('Book does not exist');
+            }
             if (book?.isOnLoan) {
                 throw new Error('Book is aready on loan');
             }
             const values = Object.values(context.payload);
-            bookLoan.loaner = +values[0];
+            bookLoan.user = +values[0];
+            const user = await this.userRepository.findOne(bookLoan.user, { relations: ['books'] });
+            if (user && user?.books.length >= 3) {
+                throw new Error('Loan limit reached');
+            }
             await this.bookRepository.update(bookLoan.id, bookLoan);
-            return await this.bookRepository.findOne(bookLoan.id, { relations: ['author', 'author.books', 'loaner', 'user.books'] });
+            return await this.bookRepository.findOne(bookLoan.id, { relations: ['author', 'author.books', 'user', 'user.books'] });
+        } catch (e) {
+            throw new Error(e)
+        }
+    }
+
+    @Mutation(() => Book)
+    @UseMiddleware(isAuth)
+    async returnBook(
+        @Arg("bookReturn", () => BookIdReturnInput) bookReturn: BookIdReturnInput, @Ctx() context: IContext):
+        Promise<Book | undefined> {
+        try {
+            const book = await this.bookRepository.findOne(bookReturn.id);
+            if (!book) {
+                throw new Error('Book does not exist');
+            }
+            if (!book?.isOnLoan) {
+                throw new Error('Book is not on loan');
+            }
+            const values = Object.values(context.payload);
+            bookReturn.user = +values[0];
+            const user = await this.userRepository.findOne(bookReturn.user, { relations: ['books'] });
+            let rightUser = false
+            console.log(user?.books);
+            user?.books.forEach(book => console.log(book.user + " " + user.id));
+            if (!rightUser) throw new Error('Other user loaned this book');
+            await this.bookRepository.update(bookReturn.id, bookReturn);
+            return await this.bookRepository.findOne(bookReturn.id);
         } catch (e) {
             throw new Error(e)
         }

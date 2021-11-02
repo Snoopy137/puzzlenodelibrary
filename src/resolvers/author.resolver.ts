@@ -27,6 +27,9 @@ class AuthorIdInput {
 
     @Field(() => Number)
     id!: number
+
+    @Field(() => Boolean)
+    isOnLoan = false;
 }
 
 @Resolver()

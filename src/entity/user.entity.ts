@@ -15,7 +15,7 @@ export class User {
     fullName!: string
 
     @Field()
-    @Column({ unique: true })
+    @Column()
     email!: string
 
     @Field()
@@ -27,6 +27,6 @@ export class User {
     createdAt!: string
 
     @Field(() => [Book], { nullable: true })
-    @OneToMany(() => Book, book => book.loaner, { nullable: true, onDelete: 'CASCADE' })
-    loans!: Book[]
+    @OneToMany(() => Book, book => book.user, { nullable: true, onDelete: 'CASCADE' })
+    books!: Book[]
 }

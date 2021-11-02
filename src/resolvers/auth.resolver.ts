@@ -73,8 +73,8 @@ export class AuthResolver {
 
             const newUser = await this.userRepository.insert({
                 fullName,
-                email,
                 password: hashedPassword,
+                email,
             })
 
             return this.userRepository.findOne(newUser.identifiers[0].id)

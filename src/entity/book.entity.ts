@@ -31,7 +31,11 @@ export class Book {
     @UpdateDateColumn({ nullable: true, type: 'timestamp' })
     loanDate!: String
 
+    @Field(() => String, { nullable: true })
+    @Column({ nullable: true, type: 'date' })
+    returnDate!: Date
+
     @Field(() => User, { nullable: true })
-    @ManyToOne(() => User, user => user.books, { onDelete: 'CASCADE' })
+    @ManyToOne(() => User, user => user.books, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
     user!: number
 }

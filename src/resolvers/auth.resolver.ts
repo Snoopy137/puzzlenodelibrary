@@ -5,6 +5,9 @@ import { User } from "../entity/user.entity";
 import { hash, compareSync } from 'bcryptjs';
 import { sign } from "jsonwebtoken";
 import { environment } from '../config/environment';
+import { reporter } from '../admin/schedule.admin';
+
+reporter.on('weekReport', () => console.log('event from auth.resolver'));
 
 @InputType()
 class UserInput {

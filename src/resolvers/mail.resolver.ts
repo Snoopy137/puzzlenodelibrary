@@ -1,6 +1,6 @@
 import { createTransport } from 'nodemailer';
 import { environment } from '../config/environment';
-import { reporter } from './schedule.admin';
+import { reporter } from '../admin/schedule.admin';
 
 reporter.on('weekReport', () => console.log('event from mail.resolver'));
 

@@ -10,4 +10,8 @@ export const environment = {
     DB_PASSWORD: process.env.DB_PASSWORD,
     DB_DATABASE: process.env.DB_DATABASE,
     JWT_SECRET: process.env.JWT_SECRET || 'Default',
+    MAILADDRES: process.env.MAILADDRES,
+    MAILPASS: process.env.MAILPASS,
+    SMTPHOST: process.env.SMTPHOST,
+    SMTPPORT: process.env.SMTPPORT
 }

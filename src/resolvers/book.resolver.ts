@@ -6,6 +6,9 @@ import { User } from '../entity/user.entity';
 import { Length } from 'class-validator';
 import { IContext, isAuth } from '../middlewares/auth.middleware';
 import moment from 'moment';
+import { reporter } from '../admin/schedule.admin';
+
+reporter.on('weekReport', () => console.log('book.resolver'));
 
 @InputType()
 class BookInput {

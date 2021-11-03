@@ -1,8 +1,9 @@
 import { createTransport } from 'nodemailer';
 import { environment } from '../config/environment';
-import { reporter } from '../admin/schedule.admin';
+import { reporter, repo } from '../admin/schedule.admin';
 
 reporter.on('weekReport', () => console.log('event from mail.resolver'));
+repo.on('test', () => console.log('test on mail resolver'));
 
 export async function sendMail1(to: string) {
     try {

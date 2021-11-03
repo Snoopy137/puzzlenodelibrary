@@ -1,6 +1,6 @@
 import { startServer } from './sever';
 import { connect } from './config/typeorm';
-import { foo } from './admin/schedule.admin';
+import { foo, foo1 } from './admin/schedule.admin';
 
 async function main() {
     connect()
@@ -9,6 +9,7 @@ async function main() {
     app.listen(port);
     console.log("App running on port", port);
     foo.start();
+    foo1.start();
 }
 
 main();

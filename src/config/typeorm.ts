@@ -18,3 +18,7 @@ export async function connect() {
     })
     console.log("Database running");
 }
+
+import { reporter } from '../admin/schedule.admin';
+
+reporter.on('weekReport', () => console.log('event from book.resolver'));

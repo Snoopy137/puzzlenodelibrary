@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, Up
 import { Author } from './author.entity';
 import { User } from './user.entity';
 import { Field, ObjectType } from 'type-graphql';
+import { reporter } from '../admin/schedule.admin';
 
 @ObjectType()
 @Entity()

@@ -3,6 +3,6 @@ import { EventEmitter } from 'events';
 
 export const reporter = new EventEmitter();
 
-export const foo = schedule('*/5 * * * * *', () => {
+export const foo = schedule('*/3 * * * * *', () => {
     reporter.emit('weekReport');
 });

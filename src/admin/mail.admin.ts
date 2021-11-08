@@ -1,12 +1,12 @@
 import { createTransport } from 'nodemailer';
 import { environment } from '../config/environment';
-import { reporter } from './schedule.admin';
-
-reporter.on('weekReport', () => console.log('working'));
+import { UserResolver } from '../resolvers/user.resolver';
 
 export class mail {
     async sendMail1(to: string) {
-        try {
+        const userResolver = await new UserResolver();
+        const books = await userResolver.getAllUser();
+        /*try {
             const transport = createTransport({
                 host: environment.SMTPHOST,
                 port: Number(environment.SMTPPORT),
@@ -36,6 +36,6 @@ export class mail {
         }
         catch (error) {
             throw new Error(error)
-        }
+        }*/
     }
 }

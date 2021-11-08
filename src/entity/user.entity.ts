@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
 import { Book } from './book.entity';
 import { Field, ObjectType } from 'type-graphql';
+import { IsEmail } from "class-validator";
 
 @ObjectType()
 @Entity()
@@ -15,7 +16,8 @@ export class User {
     fullName!: string
 
     @Field()
-    @Column()
+    @Column({ unique: true })
+    @IsEmail()
     email!: string
 
     @Field()
@@ -27,6 +29,6 @@ export class User {
     createdAt!: string
 
     @Field(() => [Book], { nullable: true })
-    @OneToMany(() => Book, book => book.user, { nullable: true, onDelete: 'CASCADE' })
+    @OneToMany(() => Book, book => book.user, { nullable: true })
     books!: Book[]
 }

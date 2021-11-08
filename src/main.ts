@@ -1,7 +1,7 @@
 import { startServer } from './sever';
 import { connect } from './config/typeorm';
-import { mail } from './admin/mail.admin';
 import { foo } from './admin/schedule.admin';
+import { mail } from './admin/mail.admin';
 
 async function main() {
     connect()
@@ -9,7 +9,9 @@ async function main() {
     const app = await startServer();
     app.listen(port);
     console.log("App running on port", port);
-    foo.start();
+    //const sendmail = new mail();
+    //await sendmail.sendMail1('');
+    //foo.start();
 }
 
 main();

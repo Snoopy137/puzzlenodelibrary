@@ -1,6 +1,6 @@
 import { createConnection } from 'typeorm';
 import path from 'path';
-
+import { BookResolver } from '../resolvers/book.resolver';
 import { environment } from './environment';
 
 export async function connect() {
@@ -17,4 +17,5 @@ export async function connect() {
         synchronize: true,
     })
     console.log("Database running");
+    const bookResolver = await new BookResolver();
 }

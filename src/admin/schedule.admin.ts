@@ -4,8 +4,8 @@ import { mail } from './mail.admin';
 
 export const reporter = new EventEmitter();
 
-export const foo = schedule('*/3 * * * * *', () => {
+export const foo = schedule(' * * * * *', () => {
     reporter.emit('weekReport');
 });
 
-reporter.on('weekReport', () => new mail().sendMail1('alandsn137@gmail.com'));
+reporter.on('weekReport', () => new mail().createMessage());

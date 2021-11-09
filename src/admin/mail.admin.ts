@@ -1,32 +1,45 @@
 import { createTransport } from 'nodemailer';
 import { environment } from '../config/environment';
 import { UserResolver } from '../resolvers/user.resolver';
+import { User } from '../entity/user.entity';
 
 export class mail {
-    async sendMail1(to: string) {
-        const userResolver = await new UserResolver();
-        const books = await userResolver.getAllUser();
-        /*try {
-            const transport = createTransport({
-                host: environment.SMTPHOST,
-                port: Number(environment.SMTPPORT),
-                secure: false,
-                auth: {
-                    user: environment.MAILADDRES,
-                    pass: environment.MAILPASS
-                },
-                tls: {
-                    rejectUnauthorized: false,
-                },
-            });
+
+    transport = createTransport({
+        host: environment.SMTPHOST,
+        port: Number(environment.SMTPPORT),
+        secure: false,
+        auth: {
+            user: environment.MAILADDRES,
+            pass: environment.MAILPASS
+        },
+        tls: {
+            rejectUnauthorized: false,
+        },
+    });
+
+    async createMessage() {
+
+        const userResolver = new UserResolver();
+        const users = await userResolver.getUsersWithLoans();
+        users.forEach((user) => {
+            user.books.forEach((book) => console.log(''));
+        });
+    }
+
+    async sendMail1(recipent: User, message: String) {
+        try {
+            let header = `<h1>Report of your loaned books</h1>
+                            `;
+            header += message;
             const messageOptions = {
                 from: environment.MAILADDRES,
-                to: to,
+                to: recipent.email,
                 subject: 'Week Report',
-                text: 'You have books overdue.'
+                html: header
             };
 
-            transport.sendMail(messageOptions, function(error) {
+            this.transport.sendMail(messageOptions, function(error) {
                 if (error) {
                     throw error;
                 } else {
@@ -36,6 +49,6 @@ export class mail {
         }
         catch (error) {
             throw new Error(error)
-        }*/
+        }
     }
 }

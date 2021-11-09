@@ -20,4 +20,13 @@ export class UserResolver {
         }
     }
 
+    @Query(() => [User])
+    async getUsersWithLoans(): Promise<User[]> {
+        try {
+            const users = this.userRepository.find({ relations: ['books'] });
+            return (await users).filter((user) => user.books.length > 0);
+        } catch (e) {
+            throw new Error(e);
+        }
+    }
 }

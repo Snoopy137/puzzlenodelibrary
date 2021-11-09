@@ -229,12 +229,14 @@ export class BookResolver {
             const userid = +Object.values(context.payload)[0];
             const user = Object.values(book.user)[0];
             if (userid !== user) throw new Error('Other user loaned this book');
+            if (new Date(book.returnDate) < new Date()) console.log('Book returned with overdue, a penalty fee will be charged');
             await this.bookRepository.update(bookReturn.id, {
                 isOnLoan: false,
                 user: undefined,
                 returnDate: undefined,
                 loanDate: undefined
             });
+            if (book.returnDate < new Date()) return await this.bookRepository.findOne(bookReturn.id);
             return await this.bookRepository.findOne(bookReturn.id);
         } catch (e) {
             throw new Error(e)

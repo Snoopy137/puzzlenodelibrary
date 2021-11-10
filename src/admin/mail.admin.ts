@@ -1,7 +1,6 @@
-import { createTransport, Transport } from 'nodemailer';
+import { createTransport } from 'nodemailer';
 import { environment } from '../config/environment';
 import { UserResolver } from '../resolvers/user.resolver';
-import { User } from '../entity/user.entity';
 
 export class mail {
 

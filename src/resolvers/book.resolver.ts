@@ -6,6 +6,7 @@ import { User } from '../entity/user.entity';
 import { Length } from 'class-validator';
 import { IContext, isAuth } from '../middlewares/auth.middleware';
 import moment from 'moment';
+import { response } from 'express';
 
 @InputType()
 class BookInput {
@@ -187,9 +188,12 @@ export class BookResolver {
     //
     @Query(() => [Book])
     @UseMiddleware(isAuth)
-    async getAvailableBook(): Promise<Book[]> {
+    async getAvailableBook(
+        @Ctx() context: IContext
+    ): Promise<Book[]> {
         try {
-            return await this.bookRepository.find({ where: { isOnLoan: false }, relations: ['author', 'author.books'] })
+            context.res.append('id', 'book');
+            return await this.bookRepository.find({ where: { isOnLoan: false }, relations: ['author', 'author.books'] });
         } catch (e) {
             throw new Error(e)
         }

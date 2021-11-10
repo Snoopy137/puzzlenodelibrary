@@ -9,8 +9,8 @@ async function main() {
     const app = await startServer();
     app.listen(port);
     console.log("App running on port", port);
-    const sendmail = new mail();
-    await sendmail.createMessage();
+    //const sendmail = new mail();
+    //await sendmail.createMessage();
     //foo.start();
 }
 

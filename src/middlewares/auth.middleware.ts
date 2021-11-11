@@ -29,3 +29,24 @@ export const isAuth: MiddlewareFn<IContext> = ({ context }, next) => {
     return next();
 
 }
+
+export const validateMail: MiddlewareFn<IContext> = ({ context }, next) => {
+
+    try {
+        const bearerToken = context.req.headers["authorization"];
+
+        if (!bearerToken) {
+            throw new Error('Unauthorized');
+        };
+
+        const jwt = bearerToken.split(" ")[1];
+        const payload = verify(jwt, environment.JWT_SECRET);
+        context.payload = payload as any;
+
+    } catch (e) {
+        throw new Error(e);
+    }
+
+    return next();
+
+}

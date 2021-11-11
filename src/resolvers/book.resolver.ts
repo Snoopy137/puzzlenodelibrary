@@ -6,7 +6,6 @@ import { User } from '../entity/user.entity';
 import { Length } from 'class-validator';
 import { IContext, isAuth } from '../middlewares/auth.middleware';
 import moment from 'moment';
-import { response } from 'express';
 
 @InputType()
 class BookInput {
@@ -247,7 +246,6 @@ export class BookResolver {
                 loanDate: undefined
             });
             const message = new Date(book.returnDate) < new Date() ? 'Book returned with overdue, a penalty fee will be charged' : 'Thank you';
-            const bookReturned = await this.bookRepository.findOne(bookReturn.id);
             return {
                 book: book,
                 message: message

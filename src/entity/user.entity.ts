@@ -31,4 +31,9 @@ export class User {
     @Field(() => [Book], { nullable: true })
     @OneToMany(() => Book, book => book.user, { nullable: true })
     books!: Book[]
+
+    @Field(() => Boolean)
+    @Column()
+    isEmailValid!: boolean;
+
 }

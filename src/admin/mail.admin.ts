@@ -1,6 +1,6 @@
 import { createTransport } from 'nodemailer';
 import { environment } from '../config/environment';
-import { UserResolver } from '../resolvers/user.resolver';
+import { UserResolver, UserIdInput } from '../resolvers/user.resolver';
 import { BookResolver } from '../resolvers/book.resolver';
 import { User } from '../entity/user.entity';
 import { getRepository, Repository } from "typeorm";
@@ -55,9 +55,8 @@ export class mail {
                     html: header
                 };
                 await transport.sendMail(messageOptions);
-                console.log(`message sent to ${user.fullName}`);
             } catch (e) {
-                console.log(e);
+                throw new Error(e);
             }
         });
     }
@@ -82,28 +81,32 @@ export class mail {
         const booksOnLoan = await bookResolver.getLoanedeBookForAdmin();
         const booksNotOnLoan = await bookResolver.getAvailableBookForAdmin();
         let loanedBookDetail = `<p>Books on loan</p><ul>`;
-        booksOnLoan.forEach((book) => {
-            loanedBookDetail += `<li>${book.title} from author ${book.author.fullName} is on loan since ${book.loanDate} by user ${this.userRepository.findOne(book.user).fullName} and will be due on ${book.returnDate}</li>`;
-        });
-        loanedBookDetail += `</ul>`;
         let notlLoanedBookDetail = `<p>Books available for loan</p><ul>`;
-        booksNotOnLoan.forEach((book) => {
-            notlLoanedBookDetail += `<li>${book.title} from author ${book.author.fullName} is available for loan</li>`;
-        });
-        loanedBookDetail += `</ul>`;
+        try {
+            booksOnLoan.forEach((book) => {
+                const user = (Object.values(book.user)[1]);
+                loanedBookDetail += `<li>${book.title} from author ${book.author.fullName} is on loan since ${book.loanDate} by user ${user} and will be due on ${book.returnDate}</li>`
+            });
+            loanedBookDetail += `</ul>`;
+            booksNotOnLoan.forEach((book) => {
+                notlLoanedBookDetail += `<li>${book.title} from author ${book.author.fullName} is available for loan</li>`;
+            });
+            loanedBookDetail += `</ul>`;
 
-        const header = `<h1>Detail about books</h1>`;
+            const header = `<h1>Detail about books</h1>`;
 
-        const message = await header + loanedBookDetail + notlLoanedBookDetail;
+            const message = header + loanedBookDetail + notlLoanedBookDetail;
 
-        const messageOptions = {
-            from: environment.MAILADDRES,
-            to: environment.MAILADDRES,
-            subject: 'Week Report',
-            html: message
-        };
-        console.log('end');
-        await transport.sendMail(messageOptions);
+            const messageOptions = {
+                from: environment.MAILADDRES,
+                to: 'alandsn137@gmail.com',
+                subject: 'Week Report',
+                html: message
+            };
+            await transport.sendMail(messageOptions);
 
+        } catch (e) {
+            throw new Error(e);
+        }
     }
 }

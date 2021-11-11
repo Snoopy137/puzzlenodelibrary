@@ -1,4 +1,4 @@
-import { Mutation, Resolver, Arg, InputType, Field, Query, UseMiddleware, Ctx } from 'type-graphql';
+import { Mutation, Resolver, Arg, InputType, Field, Query, UseMiddleware, Ctx, ObjectType } from 'type-graphql';
 import { getRepository, Repository } from "typeorm";
 import { Author } from '../entity/author.entity';
 import { Book } from '../entity/book.entity';
@@ -69,6 +69,15 @@ class BookIdReturnInput {
 
     @Field(() => Number)
     id!: number
+}
+
+@ObjectType()
+class ReturnBookResponse {
+    @Field()
+    book!: Book;
+
+    @Field()
+    message!: String;
 }
 
 @Resolver()
@@ -192,7 +201,6 @@ export class BookResolver {
         @Ctx() context: IContext
     ): Promise<Book[]> {
         try {
-            context.res.append('id', 'book');
             return await this.bookRepository.find({ where: { isOnLoan: false }, relations: ['author', 'author.books'] });
         } catch (e) {
             throw new Error(e)
@@ -221,11 +229,10 @@ export class BookResolver {
         }
     }
 
-    @Mutation(() => Book)
+    @Mutation(() => ReturnBookResponse)
     @UseMiddleware(isAuth)
     async returnBook(
-        @Arg("bookReturn", () => BookIdReturnInput) bookReturn: BookIdReturnInput, @Ctx() context: IContext):
-        Promise<Book | undefined> {
+        @Arg("bookReturn", () => BookIdReturnInput) bookReturn: BookIdReturnInput, @Ctx() context: IContext) {
         try {
             const book = await this.bookRepository.findOne(bookReturn.id, { relations: ['user'] });
             if (!book) throw new Error('Book does not exist');
@@ -239,8 +246,33 @@ export class BookResolver {
                 returnDate: undefined,
                 loanDate: undefined
             });
-            if (new Date(book.returnDate) < new Date()) console.log('Book returned with overdue, a penalty fee will be charged');
-            return await this.bookRepository.findOne(bookReturn.id);
+            const message = new Date(book.returnDate) < new Date() ? 'Book returned with overdue, a penalty fee will be charged' : 'Thank you';
+            const bookReturned = await this.bookRepository.findOne(bookReturn.id);
+            return {
+                book: book,
+                message: message
+            }
+
+        } catch (e) {
+            throw new Error(e)
+        }
+    }
+
+    @Query(() => [Book])
+    async getAvailableBookForAdmin(
+    ): Promise<Book[]> {
+        try {
+            return await this.bookRepository.find({ where: { isOnLoan: false }, relations: ['author', 'author.books'] });
+        } catch (e) {
+            throw new Error(e)
+        }
+    }
+
+    @Query(() => [Book])
+    async getLoanedeBookForAdmin(
+    ): Promise<Book[]> {
+        try {
+            return await this.bookRepository.find({ where: { isOnLoan: true }, relations: ['author', 'author.books', 'user'] });
         } catch (e) {
             throw new Error(e)
         }

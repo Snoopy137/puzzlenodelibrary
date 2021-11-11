@@ -273,7 +273,7 @@ export class AuthResolver {
             await this.userRepository.update(userFound.id, userFound);
 
             return {
-                message: 'email confirmed'
+                message: 'your password has been changed'
             }
         } catch (error) {
             throw new Error(error.message)
